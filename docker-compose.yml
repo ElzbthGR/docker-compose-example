@@ -1,0 +1,35 @@
+version: '3.3'
+
+services:
+  rabbit:
+    build: RabbitMq
+    hostname: rabbit
+    ports:
+      - 5672:5672
+      - 15672:15672
+    container_name: rabbit
+
+  node-js:
+    build: NodeJsApp
+    ports:
+      - 8800:8800
+    depends_on:
+      - rabbit
+    container_name: node-js
+
+  postgres:
+    image: postgres
+    ports:
+      - 5433:5432
+    container_name: postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=docker
+      - POSTGRES_DB=docker-db
+
+  spring-boot:
+    build: SpringBoot
+    depends_on:
+      - rabbit
+      - postgres
+    container_name: spring-boot
